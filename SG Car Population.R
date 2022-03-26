@@ -23,7 +23,8 @@ head(car_pop)
 
 graph_bad = car_pop %>%
   ggplot(aes(x=year, y=number, color=cc_rating)) +
-  geom_point()
+  geom_line() +
+  labs(title = "Singapore's vehicle population from 2005 to 2018")
 
 graph_bad
 
@@ -35,8 +36,9 @@ graph_bad
 #               '3001cc and above' = 'purple')
 
 graph1 = car_pop %>%
+  mutate(is1001 = (cc_rating == '1001-1600cc')) %>%
   ggplot(aes(x=year, y=number, color=cc_rating)) + 
-  geom_point(size = car_pop$cc_rating_size, stroke = 0, alpha=0.5) +
+  geom_line(aes(linetype = is1001),size=1.3) +
   scale_y_continuous(label=comma) +
   scale_x_continuous(labels=label_number(accuracy=1)) +
   labs(title = "Singapore's vehicle population from 2005 to 2018",
@@ -47,15 +49,18 @@ graph1 = car_pop %>%
   theme_fivethirtyeight() +
   theme(axis.title = element_text(size=20), legend.text=element_text(size=12.5)) +
   scale_color_brewer(palette = "Dark2") +
-  guides(colour = guide_legend(override.aes = list(size=10)))
+  guides(colour = guide_legend(override.aes = list(size=10))) +
+  scale_linetype_manual(values = c('dashed','solid'), guide = 'none')
   
+
 
 graph1
 
 graph1.animation = graph1 +
-  transition_time(year) +
-  labs(subtitle = "Year: {frame_time}")
+  transition_reveal(year) 
 
-animate(graph1.animation, height = 500, width = 800, fps=30, duration = 10, end_pause = 60)
+animate(graph1.animation, height = 500, width = 800, fps=30, duration = 10, end_pause = 101)
 
 anim_save('ryde_presentation.gif')
+
+?animate
